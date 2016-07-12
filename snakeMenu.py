@@ -17,6 +17,7 @@ class button(object):
         screen.blit(text, [x+50, y+25])
 
 class Circle(object):
+
 	def __init__(self, colors):
 		self.x = randint(0,750)
 		self.y = randint(0,550)
@@ -25,25 +26,26 @@ class Circle(object):
 		self.speedX = choice([-1,1])
 		self.speedY = choice([-1,1])
 		self.color = choice(colors)
-		self.addR = 1
-		self.addG = 1
-		self.addB = 1
+		self.availColor = [col for col in colors if col != self.color]
+		self.nextColor = choice(self.availColor) 
+		
+	def changedColor(self):
+		for i in range(len(self.color)):
+			if self.color[i] > self.nextColor[i]:
+				self.color[i] -= 1
+			elif self.color[i] < self.nextColor[i]:
+				self.color[i] += 1
 
-	def changeColor(self):
-		if self.color[0] >= 240 or self.color[0] <= 153:
-			self.addR *= -1
-		if self.color[1] >= 247 or self.color[1] <= 132:
-			self.addG *= -1
-		if self.color[2] >= 245 or self.color[2] <= 86:
-			self.addB *= -1
-		self.color[0] += self.addR; self.color[1] += self.addG; self.color[2] += self.addB
+		if self.color == self.nextColor:
+			return True
+		else:
+			return False
 
 class Menu(object):
 	def __init__(self,screen,clock):
 		self.screen = screen
 		self.clock  = clock
-		self.num = 25
-		self.colors = [[204,132,245], [153,247,213], [240,201,86]]
+		self.num = 30
 
 	def changeCircle(self, circle):
 		for i in range(self.num):
@@ -63,7 +65,7 @@ class Menu(object):
 		buttons[0].isSelect = True
 		done = True
 		n = 0
-		circle = [Circle(self.colors) for i in range(self.num)]
+		circle = [Circle([[204,132,245], [153,247,213], [240,201,86]]) for i in range(self.num)]
 		exit = False
 		while done:
 			for event in pygame.event.get():
@@ -103,7 +105,10 @@ class Menu(object):
 			self.changeCircle(circle)
 			for i in range(self.num):
 				pygame.draw.circle(self.screen, circle[i].color, (circle[i].x,circle[i].y),circle[i].rad)
-				circle[i].changeColor()
+				if circle[i].changedColor():
+					circle[i].availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != circle[i].color]
+					circle[i].nextColor = choice(circle[i].availColor) 
+
 			for i in range(3):
 				buttons[i].draw(self.screen, 300, y[i])
 			pygame.display.flip()
