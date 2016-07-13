@@ -16,8 +16,8 @@ class mapBlock(object):
 
 class Map(object):
 	def __init__(self):
-		self.allMaps = [mapBlock([[300,200,100,200],[500,200,100,200]]), mapBlock([[300,200,200,100], [300,400,200,100]])]
-		self.curMap = random.choice(self.allMaps) 
+		self.allMaps = [[[300,200,100,200],[500,200,100,200]], [[300,200,200,100], [300,400,200,100]]]
+		self.curMap = mapBlock(random.choice(self.allMaps)) 
 
 	def draw(self,screen):
 		for block in self.curMap.blocks:
