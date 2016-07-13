@@ -1,2 +1,1 @@
-test
-Add new change to test file
+TEST
