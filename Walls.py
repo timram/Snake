@@ -1,30 +1,39 @@
 import pygame, random
 
-class mapBlock(object):
-	def __init__(self, getBlocks):
-		self.blocks = [block for block in getBlocks]
-		self.busyX = []
-		self.busyY = []
-		for block in self.blocks:
-			for x in range(block[0]-20, block[0]+block[2]+10):
-				self.busyX.append(x)
-			for y in range(block[1]-20, block[1]+block[3]+10):
-				self.busyY.append(y)
-		self.availX = [x for x in range(780) if x not in self.busyX]
-		self.availY = [y for y in range(580) if y not in self.busyY]
+class Wall(object):
+	def __init__(self, x):
+		self.x = x
+		self.width = random.randint(50,150)
+		self.high = random.randint(50,150)
+		self.y = 0 - self.high
+		self.speed = int(0.001 * (self.width* self.high))
 
-
-class Map(object):
+class BlockWall(object):
 	def __init__(self):
-		self.allMaps = [[[300,200,100,200],[500,200,100,200]], [[300,200,200,100], [300,400,200,100]]]
-		self.curMap = mapBlock(random.choice(self.allMaps)) 
+		self.wall = [[Wall(250), 250], [Wall(600),600]]
 
-	def draw(self,screen):
-		for block in self.curMap.blocks:
-			pygame.draw.rect(screen, (0,0,0), block)
+	def draw(self, screen):
+		for i in range(len(self.wall)):
+			pygame.draw.rect(screen, (0,0,0), [self.wall[i][0].x, self.wall[i][0].y, self.wall[i][0].width, self.wall[i][0].high])
 
-	def isTouchWall(self, head, size):
-		for block in self.curMap.blocks:
-			if head.x in range(block[0]-size, block[0]+block[2]) and head.y in range(block[1]-size, block[1]+block[3]):
+	def move(self):
+		for i in range(len(self.wall)):
+			self.wall[i][0].y += self.wall[i][0].speed
+			if self.wall[i][0].y >= 600:
+				self.wall[i][0].__init__(self.wall[i][1])
+
+	def isTouchWall(self,head, size):
+		for i in range(len(self.wall)):
+			if head.x+size in range(self.wall[i][0].x, self.wall[i][0].x + self.wall[i][0].width) and\
+			head.y+size in range(self.wall[i][0].y, self.wall[i][0].y + self.wall[i][0].high):
 				return True
 		return False
+
+	def isWallTouch(self, snake):
+		for i in range(1, len(snake)):
+			if (snake[i].x in range(self.wall[0][0].x, self.wall[0][0].x + self.wall[0][0].width) and\
+			snake[i].y in range(self.wall[0][0].y, self.wall[0][0].y + self.wall[0][0].high)) or\
+			(snake[i].x in range(self.wall[1][0].x, self.wall[1][0].x + self.wall[1][0].width) and\
+			snake[i].y in range(self.wall[1][0].y, self.wall[1][0].y + self.wall[1][0].high)):
+				return i
+		return None
