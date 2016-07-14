@@ -16,7 +16,7 @@ class Game(object):
 	
 	snake = Snake()
 
-	myMap = Map()
+	walls = BlockWall()
 
 	myMenu = Menu(screen, clock)
 
@@ -32,7 +32,7 @@ class Game(object):
 
 		self.food = [Food() for i in range(3)]
 		for i in range(3):
-			self.food[i].create(self.snake, self.food, self.myMap.curMap.availX, self.myMap.curMap.availY)
+			self.food[i].create(self.snake, self.food)
 
 		self.gameover = False
 
@@ -40,8 +40,8 @@ class Game(object):
 
 		self.timeSinceTap = self.snake.speed
 
-		self.myMap.__init__()
 		self.snake.__init__()
+		self.walls.__init__()
 
 	def mainGame(self):
 		while True:
@@ -68,7 +68,7 @@ class Game(object):
 
 			self.screen.fill((255,255,255))
 
-			self.myMap.draw(self.screen)
+			self.walls.draw(self.screen)
 
 			self.snake.draw(self.screen)
 
@@ -78,7 +78,7 @@ class Game(object):
 			for i in range(3):
 				self.food[i].draw(self.screen)
 
-			if self.snake.gameover(self.width, self.high) or self.myMap.isTouchWall(self.snake.snake[0], self.snake.size):
+			if self.snake.gameover(self.width, self.high) or self.walls.isTouchWall(self.snake.snake[0], self.snake.size):
 				self.gameover = True
 
 			if not self.gameover:
@@ -87,6 +87,12 @@ class Game(object):
 				self.moveSpeed += 1
 
 				self.score += self.addScore
+
+				touchID = self.walls.isWallTouch(self.snake.snake)
+
+				if touchID != None:
+					for i in range(len(self.snake.snake)-1, touchID-1, -1):
+						self.snake.snake.remove(self.snake.snake[i])
 
 				if self.moveSpeed >= self.snake.speed:
 					
@@ -106,11 +112,13 @@ class Game(object):
 									self.speedX -= int(((self.food[i].typ*5)/abs(self.speedX) * self.speedX))
 								else:
 									self.speedY -= int(((self.food[i].typ*5)/abs(self.speedY) * self.speedY))
-								self.food[i].create(self.snake, self.food, self.myMap.curMap.availX, self.myMap.curMap.availY)
+								self.food[i].create(self.snake, self.food)
 							else:
 								self.gameover = True
 							break
 					self.snake.move(self.speedX, self.speedY)
+
+				self.walls.move()
 
 			self.timeSinceTap += 1
 			self.clock.tick(30)

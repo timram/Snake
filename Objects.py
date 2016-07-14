@@ -59,9 +59,9 @@ class Food(object):
 		self.typ = 0
 		self.color = (0,0,0)
 
-	def checkCoor(self, list1, list2, availX, availY, size1, size2):
-		self.x = random.choice(availX)
-		self.y = random.choice(availY)
+	def checkCoor(self, list1, list2, size1, size2):
+		self.x = random.choice([random.randint(0,180), random.randint(350,580), random.randint(750,780)])
+		self.y = random.randint(0,580)
 		inSnake = False
 		inFood = False
 		for block in list1:
@@ -74,9 +74,9 @@ class Food(object):
 				inFood = True
 
 		if inSnake or inFood:
-			self.checkCoor(list1, list2, availX, availY, size1, size2)
+			self.checkCoor(list1, list2, size1, size2)
 
-	def create(self, snake, food, availX, availY):
+	def create(self, snake, food):
 		self.ys = -20
 		self.speed = 1
 		self.toDown = True
@@ -91,7 +91,7 @@ class Food(object):
 		else:
 			self.color = (0,0,255)
 
-		self.checkCoor(snake.snake, food, availX, availY, snake.size, 20)
+		self.checkCoor(snake.snake, food, snake.size, 20)
 
 	def fall(self):
 		if not self.stop:
