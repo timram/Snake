@@ -15,6 +15,7 @@ class Snake(object):
 		self.snake.append(Block(100,100))
 		self.speed = 3
 		self.size = 20
+		self.fallBlocks = []
 
 	def move(self, speedX, speedY):
 		if speedX != 0:	
@@ -47,6 +48,17 @@ class Snake(object):
 		for i in range(len(self.snake)):
 			self.snake[i].draw(screen, self.size)
 
+
+class FallBlock(Snake):
+	def move(self):
+		more600 = 0
+		for i in range(len(self.snake)):
+			self.snake[i].y += self.speed
+			if self.snake[i].y >= 600:
+				more600 += 1
+		if more600 == len(self.snake):
+			self.snake = []
+			
 
 class Food(object):
 	def __init__(self):

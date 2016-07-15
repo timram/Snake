@@ -20,8 +20,13 @@ class Game(object):
 
 	myMenu = Menu(screen, clock)
 
+	fallBlocks = FallBlock()
 
 	def __init__(self):
+		self.fallBlocks.snake = []
+		self.snake.__init__()
+		self.walls.__init__()
+
 		self.speed  = 20
 
 		self.speedX = self.speed
@@ -39,9 +44,6 @@ class Game(object):
 		self.moveSpeed = 0
 
 		self.timeSinceTap = self.snake.speed
-
-		self.snake.__init__()
-		self.walls.__init__()
 
 	def mainGame(self):
 		while True:
@@ -70,6 +72,11 @@ class Game(object):
 
 			self.walls.draw(self.screen)
 
+			self.fallBlocks.draw(self.screen)
+
+			if len(self.fallBlocks.snake) > 0:
+				self.fallBlocks.move()
+
 			self.snake.draw(self.screen)
 
 			text = self.font.render("%d"%(self.score), True, (255,0,0))
@@ -88,12 +95,6 @@ class Game(object):
 
 				self.score += self.addScore
 
-				touchID = self.walls.isWallTouch(self.snake.snake)
-
-				if touchID != None:
-					for i in range(len(self.snake.snake)-1, touchID-1, -1):
-						self.snake.snake.remove(self.snake.snake[i])
-
 				if self.moveSpeed >= self.snake.speed:
 					
 					self.moveSpeed = 0
@@ -106,6 +107,7 @@ class Game(object):
 							if self.addScore >= 1:
 								self.addScore -= self.food[i].typ
 							self.snake.resize(self.food[i].typ)
+							self.fallBlocks.size = self.snake.size
 							self.speed -= self.food[i].typ*5
 							if self.speed != 0:
 								if self.speedX != 0:
@@ -117,6 +119,16 @@ class Game(object):
 								self.gameover = True
 							break
 					self.snake.move(self.speedX, self.speedY)
+
+				touchID = self.walls.isWallTouch(self.snake.snake)
+
+				if touchID != None:
+					self.fallBlocks.speed = touchID[1]+5
+					for i in range(len(self.snake.snake)-1, touchID[0]-1, -1):
+						self.fallBlocks.snake.append(self.snake.snake[i])
+						self.snake.snake.remove(self.snake.snake[i])
+
+				print(self.fallBlocks.snake, len(self.fallBlocks.snake))
 
 				self.walls.move()
 
