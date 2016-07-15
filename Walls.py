@@ -29,11 +29,13 @@ class BlockWall(object):
 				return True
 		return False
 
-	def isWallTouch(self, snake):
+	def isWallTouch(self, snake):	
 		for i in range(1, len(snake)):
 			if (snake[i].x in range(self.wall[0][0].x, self.wall[0][0].x + self.wall[0][0].width) and\
 			snake[i].y in range(self.wall[0][0].y, self.wall[0][0].y + self.wall[0][0].high)) or\
 			(snake[i].x in range(self.wall[1][0].x, self.wall[1][0].x + self.wall[1][0].width) and\
 			snake[i].y in range(self.wall[1][0].y, self.wall[1][0].y + self.wall[1][0].high)):
-				return i
+				if snake[i].x < 500 :
+					return [i, self.wall[0][0].speed]
+				return [i, self.wall[1][0].speed]
 		return None
