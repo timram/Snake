@@ -70,6 +70,7 @@ class Food(object):
 		self.stop = False
 		self.typ = 0
 		self.color = (0,0,0)
+		self.addPoint = 0
 
 	def checkCoor(self, list1, list2, size1, size2):
 		self.x = random.choice([random.randint(0,180), random.randint(350,580), random.randint(750,780)])
@@ -77,13 +78,14 @@ class Food(object):
 		inSnake = False
 		inFood = False
 		for block in list1:
-			if self.x in range(block.x - size1, block.x + size1) and self.y in range(block.y - size1, block.y + size1):
+			if self.x in range(block.x - (size1+10), block.x +size1+10) and self.y in range(block.y - (size1+10), block.y + size1+10):
 				inSnake = True
 
 		for block in list2:
-			if self.x != block.x and self.y != block.y and self.x in range(block.x - size2, block.x + size2) and \
-			self.y in range(block.y - size2, block.y + size2):
-				inFood = True
+			if self.x != block.x and self.y != block.y:
+				if self.x in range(block.x - (size2+10), block.x + size2+10) and \
+				self.y in range(block.y - (size2+10), block.y + size2+10):
+					inFood = True
 
 		if inSnake or inFood:
 			self.checkCoor(list1, list2, size1, size2)
@@ -98,10 +100,13 @@ class Food(object):
 
 		if self.typ == -1:
 			self.color = (255,0,0)
+			self.addPoint = 200
 		elif self.typ == 0:
 			self.color = (0,255,0)
+			self.addPoint = 100
 		else:
 			self.color = (0,0,255)
+			self.addPoint = 0
 
 		self.checkCoor(snake.snake, food, snake.size, 20)
 
