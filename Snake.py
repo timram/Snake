@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, os
 from Objects import *
 from Walls import *
 from snakeMenu import *
@@ -23,6 +23,13 @@ class Game(object):
 	fallBlocks = FallBlock()
 
 	def __init__(self):
+		self.best = 0
+
+		if os.path.exists("Result.txt"):
+			file = open("Result.txt", 'r')
+			self.best = int(file.readline())
+			file.close()
+
 		self.fallBlocks.snake = []
 		self.snake.__init__()
 		self.walls.__init__()
@@ -33,7 +40,7 @@ class Game(object):
 		self.speedY = 0
 
 		self.score = 0
-		self.addScore = 5
+		self.addScore = 1
 
 		self.food = [Food() for i in range(3)]
 		for i in range(3):
@@ -80,18 +87,26 @@ class Game(object):
 			self.snake.draw(self.screen)
 
 			text = self.font.render("%d"%(self.score), True, (255,0,0))
+			text1 = self.font.render("Best score: %d"%(self.best), True, (255,0,0))
 			self.screen.blit(text, [25,25])
+			self.screen.blit(text1, [25,50])
 
 			for i in range(3):
 				self.food[i].draw(self.screen)
 
 			if self.snake.gameover(self.width, self.high) or self.walls.isTouchWall(self.snake.snake[0], self.snake.size):
 				self.gameover = True
+				if self.score > self.best:
+					file = open("Result.txt", 'w')
+					file.write(str(self.score))
+					file.close()
 
 			if not self.gameover:
 				track = self.snake.snake[-1]
 				
 				self.moveSpeed += 1
+
+				self.addScore = len(self.snake.snake)
 
 				self.score += self.addScore
 
@@ -104,8 +119,7 @@ class Game(object):
 						self.snake.snake[0].y in range(int(self.food[i].ys)-self.snake.size, int(self.food[i].ys) + 20):
 							self.snake.snake.append(Block(track.x, track.y))
 							self.snake.speed -= self.food[i].typ
-							if self.addScore >= 1:
-								self.addScore -= self.food[i].typ
+							self.score += self.food[i].addPoint
 							self.snake.resize(self.food[i].typ)
 							self.fallBlocks.size = self.snake.size
 							self.speed -= self.food[i].typ*5
@@ -120,7 +134,7 @@ class Game(object):
 							break
 					self.snake.move(self.speedX, self.speedY)
 
-				touchID = self.walls.isWallTouch(self.snake.snake)
+				touchID = self.walls.isWallTouch(self.snake.snake,self.snake.size)
 
 				if touchID != None:
 					self.fallBlocks.speed = touchID[1]+5

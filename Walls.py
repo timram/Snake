@@ -24,17 +24,17 @@ class BlockWall(object):
 
 	def isTouchWall(self,head, size):
 		for i in range(len(self.wall)):
-			if head.x+size in range(self.wall[i][0].x, self.wall[i][0].x + self.wall[i][0].width) and\
-			head.y+size in range(self.wall[i][0].y, self.wall[i][0].y + self.wall[i][0].high):
+			if head.x in range(self.wall[i][0].x-size, self.wall[i][0].x + self.wall[i][0].width) and\
+			head.y in range(self.wall[i][0].y-size, self.wall[i][0].y + self.wall[i][0].high):
 				return True
 		return False
 
-	def isWallTouch(self, snake):	
+	def isWallTouch(self, snake, size):	
 		for i in range(1, len(snake)):
-			if (snake[i].x in range(self.wall[0][0].x, self.wall[0][0].x + self.wall[0][0].width) and\
-			snake[i].y in range(self.wall[0][0].y, self.wall[0][0].y + self.wall[0][0].high)) or\
-			(snake[i].x in range(self.wall[1][0].x, self.wall[1][0].x + self.wall[1][0].width) and\
-			snake[i].y in range(self.wall[1][0].y, self.wall[1][0].y + self.wall[1][0].high)):
+			if (snake[i].x in range(self.wall[0][0].x-size, self.wall[0][0].x + self.wall[0][0].width) and\
+			snake[i].y in range(self.wall[0][0].y-size, self.wall[0][0].y + self.wall[0][0].high)) or\
+			(snake[i].x in range(self.wall[1][0].x-size, self.wall[1][0].x + self.wall[1][0].width) and\
+			snake[i].y in range(self.wall[1][0].y-size, self.wall[1][0].y + self.wall[1][0].high)):
 				if snake[i].x < 500 :
 					return [i, self.wall[0][0].speed]
 				return [i, self.wall[1][0].speed]
