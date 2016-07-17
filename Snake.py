@@ -1,4 +1,4 @@
-import pygame, random, os
+import pygame, random, os, inputbox
 from Objects import *
 from Walls import *
 from snakeMenu import *
@@ -141,6 +141,7 @@ class Game(object):
 					for i in range(len(self.snake.snake)-1, touchID[0]-1, -1):
 						self.fallBlocks.snake.append(self.snake.snake[i])
 						self.snake.snake.remove(self.snake.snake[i])
+					self.score -= len(self.fallBlocks.snake)*100
 
 				print(self.fallBlocks.snake, len(self.fallBlocks.snake))
 
@@ -153,6 +154,8 @@ class Game(object):
 
 def main():
 	game = Game()
+	name = inputbox.ask(game.screen, "Your name")
+	print(name)
 	choice = game.myMenu.menu(False)
 	if not choice:
 		print("END")
