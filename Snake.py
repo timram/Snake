@@ -18,17 +18,25 @@ class Game(object):
 
 	walls = BlockWall()
 
-	myMenu = Menu(screen, clock)
-
 	fallBlocks = FallBlock()
 
-	def __init__(self):
-		self.best = 0
+	result = {"best":0}
 
-		if os.path.exists("Result.txt"):
-			file = open("Result.txt", 'r')
-			self.best = int(file.readline())
-			file.close()
+	if os.path.exists("Result.txt"):
+		file = open("Result.txt", 'r')
+		for line in file:
+			line = line.split(' ')
+			result[line[0]] = int(line[1])
+			print(line)
+		file.close()
+
+	name = inputbox.ask(screen, "Your name")
+	if name not in result:
+		result[name] = 0
+
+	myMenu = Menu(screen, clock, result)
+
+	def __init__(self):
 
 		self.fallBlocks.snake = []
 		self.snake.__init__()
@@ -87,19 +95,21 @@ class Game(object):
 			self.snake.draw(self.screen)
 
 			text = self.font.render("%d"%(self.score), True, (255,0,0))
-			text1 = self.font.render("Best score: %d"%(self.best), True, (255,0,0))
+			text1 = self.font.render("Best score: %d"%(self.result['best']), True, (255,0,0))
+			text2 = self.font.render("Your best score: %d"%(self.result[self.name]), True, (255,0,0))
 			self.screen.blit(text, [25,25])
-			self.screen.blit(text1, [25,50])
+			self.screen.blit(text1, [25,75])
+			self.screen.blit(text2, [25,50])
 
 			for i in range(3):
 				self.food[i].draw(self.screen)
 
 			if self.snake.gameover(self.width, self.high) or self.walls.isTouchWall(self.snake.snake[0], self.snake.size):
 				self.gameover = True
-				if self.score > self.best:
-					file = open("Result.txt", 'w')
-					file.write(str(self.score))
-					file.close()
+				if self.score > self.result['best']:
+					self.result['best'] = self.score
+				if self.score > self.result[self.name]:
+					self.result[self.name] = self.score
 
 			if not self.gameover:
 				track = self.snake.snake[-1]
@@ -143,7 +153,7 @@ class Game(object):
 						self.snake.snake.remove(self.snake.snake[i])
 					self.score -= len(self.fallBlocks.snake)*100
 
-				print(self.fallBlocks.snake, len(self.fallBlocks.snake))
+			
 
 				self.walls.move()
 
@@ -154,14 +164,18 @@ class Game(object):
 
 def main():
 	game = Game()
-	name = inputbox.ask(game.screen, "Your name")
-	print(name)
+	print(game.name)
 	choice = game.myMenu.menu(False)
 	if not choice:
 		print("END")
 		return
 
 	game.mainGame()
+
+	file = open("Result.txt", 'w')
+	for key in game.result:
+		file.write(key + " " + str(game.result[key])+' \n')
+	file.close()
 
 main()
 
