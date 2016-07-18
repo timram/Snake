@@ -100,7 +100,7 @@ class Food(object):
 
 		if self.typ == -1:
 			self.color = (255,0,0)
-			self.addPoint = 200
+			self.addPoint = 500
 		elif self.typ == 0:
 			self.color = (0,255,0)
 			self.addPoint = 100
