@@ -141,6 +141,10 @@ class Game(object):
 								self.food[i].create(self.snake, self.food)
 							else:
 								self.gameover = True
+								if self.score > self.result['best']:
+									self.result['best'] = self.score
+								if self.score > self.result[self.name]:
+									self.result[self.name] = self.score
 							break
 					self.snake.move(self.speedX, self.speedY)
 
