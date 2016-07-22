@@ -6,7 +6,7 @@ class Wall(object):
 		self.width = random.randint(50,150)
 		self.high = random.randint(50,150)
 		self.y = 0 - self.high
-		self.speed = int(0.001 * (self.width* self.high))
+		self.speed = 25 - int(0.001 * (self.width* self.high))
 
 class BlockWall(object):
 	def __init__(self):
