@@ -39,8 +39,7 @@ class Circle(object):
 				self.color[i] += 1
 
 		if self.color == self.nextColor:
-			self.availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color]
-			self.nextColor = choice(self.availColor)
+			return True
 		else:
 			return False
 
@@ -129,7 +128,9 @@ class Menu(object):
 			self.changeCircle(circle)
 			for i in range(self.num):
 				pygame.draw.circle(self.screen, circle[i].color, (circle[i].x,circle[i].y),circle[i].rad)
-				circle[i].changeColor()
+				if circle[i].changeColor():
+					circle[i].availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != circle[i].color]
+					circle[i].nextColor = choice(circle[i].availColor)
 
 			if showResult:
 				self.showResult() 

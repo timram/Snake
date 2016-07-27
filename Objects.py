@@ -11,7 +11,6 @@ class Block(Circle):
 
 	def draw(self, screen, size):
 		pygame.draw.rect(screen, self.color, [self.x, self.y, size, size])
-		self.changeColor()
 
 
 class Snake(object):
@@ -52,6 +51,8 @@ class Snake(object):
 	def draw(self, screen):
 		for i in range(len(self.snake)):
 			self.snake[i].draw(screen, self.size)
+			if self.snake[i].changeColor():
+				self.snake[i].nextColor = self.snake[-1].color 
 
 
 class FallBlock(Snake):

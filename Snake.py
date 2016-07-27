@@ -10,7 +10,7 @@ class Game(object):
 	high = 600
 	screen = pygame.display.set_mode([width, high])
 
-	background = (231, 242,191)
+	background = (198, 202, 204)
 	
 	clock = pygame.time.Clock()
 	
@@ -64,6 +64,7 @@ class Game(object):
 		self.timeSinceTap = self.snake.speed
 		self.timeToDie = 20
 		self.startTime = self.endTime = time.time()
+		self.pouseTimeStart = self.pouseTime = 0
 
 	def mainGame(self):
 		while True:
@@ -83,10 +84,12 @@ class Game(object):
 						self.__init__()
 					elif event.key == pygame.K_ESCAPE:
 						if not self.gameover:
+							self.pouseTimeStart = time.time()
 							choice = self.myMenu.menu(True)
 							if not choice:
 								print("END")
 								return
+							self.pouseTime += time.time() - self.pouseTimeStart
 						else:
 							choice = self.myMenu.menu(False)
 							if not choice:
@@ -126,7 +129,7 @@ class Game(object):
 					self.result[self.name] = self.score
 
 			if not self.gameover:
-				self.endTime = time.time()
+				self.endTime = time.time() - self.pouseTime
 
 				if self.endTime - self.startTime >= self.timeToDie:
 					self.gameover = True
@@ -201,6 +204,7 @@ def main():
 		print("END")
 		return
 
+	game.__init__()
 	game.mainGame()
 
 	file = open("Result.txt", 'w')
