@@ -18,18 +18,20 @@ class button(object):
 
 class Circle(object):
 
-	def __init__(self, colors):
+	def __init__(self):
 		self.x = randint(0,750)
 		self.y = randint(0,550)
-		self.rad = randint(10,30)
+		self.minRad = randint(5,15)
+		self.maxRad = randint(35,45)
+		self.rad = randint(self.minRad, self.maxRad)
 		self.add = 1
 		self.speedX = choice([-1,1])
 		self.speedY = choice([-1,1])
-		self.color = choice(colors)
-		self.availColor = [col for col in colors if col != self.color]
+		self.color = choice([[204,132,245], [153,247,213], [240,201,86]])
+		self.availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color]
 		self.nextColor = choice(self.availColor) 
 		
-	def changedColor(self):
+	def changeColor(self):
 		for i in range(len(self.color)):
 			if self.color[i] > self.nextColor[i]:
 				self.color[i] -= 1
@@ -37,22 +39,24 @@ class Circle(object):
 				self.color[i] += 1
 
 		if self.color == self.nextColor:
-			return True
+			self.availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color]
+			self.nextColor = choice(self.availColor)
 		else:
 			return False
 
 class Menu(object):
-	def __init__(self,screen,clock, result):
+	def __init__(self,screen,clock, result, background):
 		self.screen = screen
 		self.clock  = clock
-		self.num = 30
+		self.num = 40
 		self.result = result
 		self.font = pygame.font.Font(None, 25)
 		self.bestfont = pygame.font.Font(None, 50)
+		self.background = background
 
 	def changeCircle(self, circle):
 		for i in range(self.num):
-			if circle[i].rad == 40 or circle[i].rad == 9:
+			if circle[i].rad == circle[i].maxRad or circle[i].rad == circle[i].minRad - 1:
 				circle[i].add *= -1
 			circle[i].rad += circle[i].add
 			if circle[i].x + circle[i].rad > 800 or circle[i].x - circle[i].rad < -20:
@@ -63,12 +67,12 @@ class Menu(object):
 			circle[i].y += circle[i].speedY
 
 	def showResult(self):
-		text = self.bestfont.render("%s : %d"%("BEST",self.result['best']), True, (255,255,255))
+		text = self.bestfont.render("%s : %d"%("BEST",self.result['best']), True, (63, 64, 59))
 		self.screen.blit(text, [350, 50])
 		y = 100
 		for key in self.result:
 			if key != "best":
-				text = self.font.render("%s : %d"%(key,self.result[key]), True, (255,255,255))
+				text = self.font.render("%s : %d"%(key,self.result[key]), True, (63, 64, 59))
 				self.screen.blit(text, [350, y])
 				y += 25
 
@@ -78,7 +82,7 @@ class Menu(object):
 		buttons[0].isSelect = True
 		done = True
 		n = 0
-		circle = [Circle([[204,132,245], [153,247,213], [240,201,86]]) for i in range(self.num)]
+		circle = [Circle() for i in range(self.num)]
 		exit = False
 		showResult = False
 		while done:
@@ -116,18 +120,16 @@ class Menu(object):
 							showResult = False
 						else:
 							showResult = True
-					elif event.key == pygame.K_ESCAPE:
+					elif event.key == pygame.K_ESCAPE and not showResult:
 						if isPlay:
 							return True
 						return False
 
-			self.screen.fill((247,141,235))
+			self.screen.fill(self.background)
 			self.changeCircle(circle)
 			for i in range(self.num):
 				pygame.draw.circle(self.screen, circle[i].color, (circle[i].x,circle[i].y),circle[i].rad)
-				if circle[i].changedColor():
-					circle[i].availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != circle[i].color]
-					circle[i].nextColor = choice(circle[i].availColor)
+				circle[i].changeColor()
 
 			if showResult:
 				self.showResult() 

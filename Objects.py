@@ -1,12 +1,17 @@
 import pygame, random
+from snakeMenu import Circle
 
-class Block(object):
+class Block(Circle):
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
+		self.color = random.choice([[204,132,245], [153,247,213], [240,201,86]])
+		self.availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color]
+		self.nextColor = random.choice(self.availColor)
 
 	def draw(self, screen, size):
-		pygame.draw.rect(screen, (255,0,0), [self.x, self.y, size, size])
+		pygame.draw.rect(screen, self.color, [self.x, self.y, size, size])
+		self.changeColor()
 
 
 class Snake(object):

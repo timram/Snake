@@ -9,6 +9,8 @@ class Game(object):
 	width = 800
 	high = 600
 	screen = pygame.display.set_mode([width, high])
+
+	background = (231, 242,191)
 	
 	clock = pygame.time.Clock()
 	
@@ -31,11 +33,11 @@ class Game(object):
 			print(line)
 		file.close()
 
-	name = inputbox.ask(screen, "Your name")
+	name = inputbox.ask(screen, "Your name", background)
 	if name not in result:
 		result[name] = 0
 
-	myMenu = Menu(screen, clock, result)
+	myMenu = Menu(screen, clock, result, background)
 
 	def __init__(self):
 
@@ -93,7 +95,7 @@ class Game(object):
 							self.__init__()
 					self.timeSinceTap = 0
 
-			self.screen.fill((255,255,255))
+			self.screen.fill(self.background)
 
 			self.walls.draw(self.screen)
 
