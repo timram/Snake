@@ -5,8 +5,8 @@ class Block(Circle):
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
-		self.color = random.choice([[204,132,245], [153,247,213], [240,201,86]])
-		self.availColor = [col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color]
+		self.color = random.choice([[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]])
+		self.availColor = [col for col in [[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]] if col != self.color]
 		self.nextColor = random.choice(self.availColor)
 
 	def draw(self, screen, size):
@@ -16,7 +16,7 @@ class Block(Circle):
 class Snake(object):
 	def __init__(self):
 		self.snake = []
-		self.snake.append(Block(100,100))
+		self.snake.append(Block(50,350))
 		self.speed = 3
 		self.size = 20
 		self.fallBlocks = []
@@ -34,6 +34,7 @@ class Snake(object):
 		y = self.snake[0].y + addY
 
 		self.snake.insert(0, Block(x, y))
+		self.snake[0].color = self.snake[-1].color 
 		self.snake.remove(self.snake[-1])
 
 	def gameover(self, width, high):
@@ -52,7 +53,7 @@ class Snake(object):
 		for i in range(len(self.snake)):
 			self.snake[i].draw(screen, self.size)
 			if self.snake[i].changeColor():
-				self.snake[i].nextColor = self.snake[-1].color 
+				self.snake[i].nextColor = self.snake[i-1].color 
 
 
 class FallBlock(Snake):
