@@ -1,18 +1,22 @@
 import pygame, random
+from snakeMenu import Circle
 
-class Block(object):
+class Block(Circle):
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
+		self.color = random.choice([[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]])
+		self.availColor = [col for col in [[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]] if col != self.color]
+		self.nextColor = random.choice(self.availColor)
 
 	def draw(self, screen, size):
-		pygame.draw.rect(screen, (255,0,0), [self.x, self.y, size, size])
+		pygame.draw.rect(screen, self.color, [self.x, self.y, size, size])
 
 
 class Snake(object):
 	def __init__(self):
 		self.snake = []
-		self.snake.append(Block(100,100))
+		self.snake.append(Block(50,350))
 		self.speed = 3
 		self.size = 20
 		self.fallBlocks = []
@@ -30,6 +34,7 @@ class Snake(object):
 		y = self.snake[0].y + addY
 
 		self.snake.insert(0, Block(x, y))
+		self.snake[0].color = self.snake[-1].color 
 		self.snake.remove(self.snake[-1])
 
 	def gameover(self, width, high):
@@ -47,6 +52,8 @@ class Snake(object):
 	def draw(self, screen):
 		for i in range(len(self.snake)):
 			self.snake[i].draw(screen, self.size)
+			if self.snake[i].changeColor():
+				self.snake[i].nextColor = self.snake[i-1].color 
 
 
 class FallBlock(Snake):
@@ -73,7 +80,7 @@ class Food(object):
 		self.addPoint = 0
 
 	def checkCoor(self, list1, list2, size1, size2):
-		self.x = random.choice([random.randint(0,180), random.randint(350,580), random.randint(750,780)])
+		self.x = random.choice([random.randint(0,180), random.randint(350,480), random.randint(650,780)])
 		self.y = random.randint(0,580)
 		inSnake = False
 		inFood = False

@@ -1,4 +1,4 @@
-import pygame, random, os, inputbox
+import pygame, random, os, inputbox, time
 from Objects import *
 from Walls import *
 from snakeMenu import *
@@ -9,11 +9,14 @@ class Game(object):
 	width = 800
 	high = 600
 	screen = pygame.display.set_mode([width, high])
+
+	background = (198, 202, 204)
 	
 	clock = pygame.time.Clock()
 	
 	font = pygame.font.Font(None, 25)
-	
+	fontGameOver = pygame.font.Font(None, 75)
+
 	snake = Snake()
 
 	walls = BlockWall()
@@ -30,11 +33,11 @@ class Game(object):
 			print(line)
 		file.close()
 
-	name = inputbox.ask(screen, "Your name")
+	name = inputbox.ask(screen, "Your name", background)
 	if name not in result:
 		result[name] = 0
 
-	myMenu = Menu(screen, clock, result)
+	myMenu = Menu(screen, clock, result, background)
 
 	def __init__(self):
 
@@ -59,6 +62,9 @@ class Game(object):
 		self.moveSpeed = 0
 
 		self.timeSinceTap = self.snake.speed
+		self.timeToDie = 20
+		self.startTime = self.endTime = time.time()
+		self.pouseTimeStart = self.pouseTime = 0
 
 	def mainGame(self):
 		while True:
@@ -76,14 +82,23 @@ class Game(object):
 						self.speedX = self.speed; self.speedY = 0
 					elif event.key == pygame.K_RETURN and self.gameover:
 						self.__init__()
-					elif event.key == pygame.K_ESCAPE and not self.gameover:
-						choice = self.myMenu.menu(True)
-						if not choice:
-							print("END")
-							return
+					elif event.key == pygame.K_ESCAPE:
+						if not self.gameover:
+							self.pouseTimeStart = time.time()
+							choice = self.myMenu.menu(True)
+							if not choice:
+								print("END")
+								return
+							self.pouseTime += time.time() - self.pouseTimeStart
+						else:
+							choice = self.myMenu.menu(False)
+							if not choice:
+								print("END")
+								return
+							self.__init__()
 					self.timeSinceTap = 0
 
-			self.screen.fill((255,255,255))
+			self.screen.fill(self.background)
 
 			self.walls.draw(self.screen)
 
@@ -97,9 +112,11 @@ class Game(object):
 			text = self.font.render("%d"%(self.score), True, (255,0,0))
 			text1 = self.font.render("Best score: %d"%(self.result['best']), True, (255,0,0))
 			text2 = self.font.render("Your best score: %d"%(self.result[self.name]), True, (255,0,0))
+			text3 = self.font.render("%.2f"%(self.endTime - self.startTime), True, (255,0,0))
 			self.screen.blit(text, [25,25])
 			self.screen.blit(text1, [25,75])
 			self.screen.blit(text2, [25,50])
+			self.screen.blit(text3, [300,25])
 
 			for i in range(3):
 				self.food[i].draw(self.screen)
@@ -112,6 +129,11 @@ class Game(object):
 					self.result[self.name] = self.score
 
 			if not self.gameover:
+				self.endTime = time.time() - self.pouseTime
+
+				if self.endTime - self.startTime >= self.timeToDie:
+					self.gameover = True
+
 				track = self.snake.snake[-1]
 				
 				self.moveSpeed += 1
@@ -127,6 +149,7 @@ class Game(object):
 					for i in range(3):
 						if self.snake.snake[0].x in range(self.food[i].x-self.snake.size, self.food[i].x + 20) and \
 						self.snake.snake[0].y in range(int(self.food[i].ys)-self.snake.size, int(self.food[i].ys) + 20):
+							self.startTime = self.endTime
 							self.snake.snake.append(Block(track.x, track.y))
 							self.snake.speed -= self.food[i].typ
 							self.score += self.food[i].addPoint
@@ -141,6 +164,10 @@ class Game(object):
 								self.food[i].create(self.snake, self.food)
 							else:
 								self.gameover = True
+								if self.score > self.result['best']:
+									self.result['best'] = self.score
+								if self.score > self.result[self.name]:
+									self.result[self.name] = self.score
 							break
 					self.snake.move(self.speedX, self.speedY)
 
@@ -153,9 +180,16 @@ class Game(object):
 						self.snake.snake.remove(self.snake.snake[i])
 					self.score -= len(self.fallBlocks.snake)*100
 
-			
-
 				self.walls.move()
+
+			else:
+				text = self.fontGameOver.render("GAME OVER", True, (255,0,0))
+				textSuppot =self.font.render("For continue tap ENTER", True, (0,0,0))
+				textSuppot1 =self.font.render("For exit tap ESCAPE", True, (0,0,0))
+				self.screen.blit(text, [275, 200])
+				self.screen.blit(textSuppot, [335, 275])
+				self.screen.blit(textSuppot1, [335, 300])
+
 
 			self.timeSinceTap += 1
 			self.clock.tick(30)
@@ -170,6 +204,7 @@ def main():
 		print("END")
 		return
 
+	game.__init__()
 	game.mainGame()
 
 	file = open("Result.txt", 'w')

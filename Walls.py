@@ -6,11 +6,11 @@ class Wall(object):
 		self.width = random.randint(50,150)
 		self.high = random.randint(50,150)
 		self.y = 0 - self.high
-		self.speed = int(0.001 * (self.width* self.high))
+		self.speed = 25 - int(0.001 * (self.width* self.high))
 
 class BlockWall(object):
 	def __init__(self):
-		self.wall = [[Wall(250), 250], [Wall(600),600]]
+		self.wall = [[Wall(200), 200], [Wall(500),500]]
 
 	def draw(self, screen):
 		for i in range(len(self.wall)):
