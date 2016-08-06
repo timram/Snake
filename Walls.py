@@ -10,7 +10,7 @@ class Wall(object):
 
 class BlockWall(object):
 	def __init__(self):
-		self.wall = [[Wall(150), 150], [Wall(500),500]]
+		self.wall = [[Wall(200), 200], [Wall(500),500]]
 
 	def draw(self, screen):
 		for i in range(len(self.wall)):

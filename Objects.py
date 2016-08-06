@@ -80,7 +80,7 @@ class Food(object):
 		self.addPoint = 0
 
 	def checkCoor(self, list1, list2, size1, size2):
-		self.x = random.choice([random.randint(0,180), random.randint(350,580), random.randint(750,780)])
+		self.x = random.choice([random.randint(0,180), random.randint(350,480), random.randint(650,780)])
 		self.y = random.randint(0,580)
 		inSnake = False
 		inFood = False
