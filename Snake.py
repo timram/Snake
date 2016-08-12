@@ -37,7 +37,7 @@ class Game(object):
 	if name not in result:
 		result[name] = 0
 
-	myMenu = Menu(screen, clock, result, background)
+	myMenu = Menu(screen, clock, background)
 
 	def __init__(self):
 
@@ -85,13 +85,13 @@ class Game(object):
 					elif event.key == pygame.K_ESCAPE:
 						if not self.gameover:
 							self.pouseTimeStart = time.time()
-							choice = self.myMenu.menu(True)
+							choice = self.myMenu.menu(True, self.result, self.name)
 							if not choice:
 								print("END")
 								return
 							self.pouseTime += time.time() - self.pouseTimeStart
 						else:
-							choice = self.myMenu.menu(False)
+							choice = self.myMenu.menu(False, self.result, self.name)
 							if not choice:
 								print("END")
 								return
@@ -199,7 +199,7 @@ class Game(object):
 def main():
 	game = Game()
 	print(game.name)
-	choice = game.myMenu.menu(False)
+	choice = game.myMenu.menu(False, game.result, game.name)
 	if not choice:
 		print("END")
 		return

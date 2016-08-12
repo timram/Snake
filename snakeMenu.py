@@ -1,5 +1,6 @@
-import pygame, time
+import pygame, time, os
 from random import randint, choice
+import inputbox
 
 class button(object):
     def __init__(self, name):
@@ -44,11 +45,10 @@ class Circle(object):
 			return False
 
 class Menu(object):
-	def __init__(self,screen,clock, result, background):
+	def __init__(self,screen,clock, background):
 		self.screen = screen
 		self.clock  = clock
 		self.num = 40
-		self.result = result
 		self.font = pygame.font.Font(None, 25)
 		self.bestfont = pygame.font.Font(None, 50)
 		self.background = background
@@ -65,17 +65,30 @@ class Menu(object):
 			circle[i].x += circle[i].speedX
 			circle[i].y += circle[i].speedY
 
-	def showResult(self):
-		text = self.bestfont.render("%s : %d"%("BEST",self.result['best']), True, (63, 64, 59))
+	def showResult(self, result, name):
+		key = pygame.event.poll()
+		print(key)
+		if key == 99:
+			print("Clear history")
+			self.clearHistory(result, name)
+		text = self.bestfont.render("%s : %d"%("BEST",result['best']), True, (63, 64, 59))
+		text1 = self.font.render("For clear history press 'c'", True, (63,64,59))
 		self.screen.blit(text, [350, 50])
+		self.screen.blit(text1, [20, 20])
 		y = 100
-		for key in self.result:
+		for key in result:
 			if key != "best":
-				text = self.font.render("%s : %d"%(key,self.result[key]), True, (63, 64, 59))
+				text = self.font.render("%s : %d"%(key,result[key]), True, (63, 64, 59))
 				self.screen.blit(text, [350, y])
 				y += 25
 
-	def menu(self, isPlay):
+	def clearHistory(self, result, name):
+		file = open("Result.txt", 'w')
+		file.close()
+		for key in result:
+			result[key]=0
+
+	def menu(self, isPlay, result, name):
 		buttons = [button("PLAY"), button("STAT"), button("EXIT")]
 		y = [75,250,425]
 		buttons[0].isSelect = True
@@ -119,10 +132,15 @@ class Menu(object):
 							showResult = False
 						else:
 							showResult = True
-					elif event.key == pygame.K_ESCAPE and not showResult:
-						if isPlay:
-							return True
-						return False
+					elif event.key == 99 and showResult:
+						self.clearHistory(result, name)
+					elif event.key == pygame.K_ESCAPE:
+						if showResult:
+							showResult = False
+						else:
+							if isPlay:
+								return True
+							return False
 
 			self.screen.fill(self.background)
 			self.changeCircle(circle)
@@ -133,7 +151,7 @@ class Menu(object):
 					circle[i].nextColor = choice(circle[i].availColor)
 
 			if showResult:
-				self.showResult() 
+				self.showResult(result, name) 
 			else:
 				for i in range(3):
 					buttons[i].draw(self.screen, 300, y[i])
