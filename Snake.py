@@ -107,7 +107,8 @@ class Game(object):
 			if len(self.fallBlocks.snake) > 0:
 				self.fallBlocks.move()
 
-			self.snake.draw(self.screen)
+			if len(self.snake.snake) > 0:
+				self.snake.draw(self.screen)
 
 			text = self.font.render("%d"%(self.score), True, (255,0,0))
 			text1 = self.font.render("Best score: %d"%(self.result['best']), True, (255,0,0))
@@ -150,7 +151,7 @@ class Game(object):
 						if self.snake.snake[0].x in range(self.food[i].x-self.snake.size, self.food[i].x + 20) and \
 						self.snake.snake[0].y in range(int(self.food[i].ys)-self.snake.size, int(self.food[i].ys) + 20):
 							self.startTime = self.endTime
-							self.snake.snake.append(Block(track.x, track.y))
+							self.snake.snake.append(Block(track.x, track.y, track.color, track.nextColor))
 							self.snake.speed -= self.food[i].typ
 							self.score += self.food[i].addPoint
 							self.snake.resize(self.food[i].typ)

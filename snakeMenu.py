@@ -66,11 +66,6 @@ class Menu(object):
 			circle[i].y += circle[i].speedY
 
 	def showResult(self, result, name):
-		key = pygame.event.poll()
-		print(key)
-		if key == 99:
-			print("Clear history")
-			self.clearHistory(result, name)
 		text = self.bestfont.render("%s : %d"%("BEST",result['best']), True, (63, 64, 59))
 		text1 = self.font.render("For clear history press 'c'", True, (63,64,59))
 		self.screen.blit(text, [350, 50])
@@ -82,7 +77,14 @@ class Menu(object):
 				self.screen.blit(text, [350, y])
 				y += 25
 
-	def clearHistory(self, result, name):
+	def showWarMes(self):
+		pygame.draw.rect(self.screen, (255,255,255), [280, 200, 350,100])
+		text = self.font.render("Are you sure whant to clear hystory?", True, (0,0,0))
+		self.screen.blit(text, [300, 220])
+		text = self.font.render("(y/n)", True, (0,0,0))
+		self.screen.blit(text, [435, 250])
+
+	def clearHistory(self, result):
 		file = open("Result.txt", 'w')
 		file.close()
 		for key in result:
@@ -97,6 +99,7 @@ class Menu(object):
 		circle = [Circle() for i in range(self.num)]
 		exit = False
 		showResult = False
+		showWarMes = False
 		while done:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -127,13 +130,18 @@ class Menu(object):
 						return False
 					elif event.key == pygame.K_RETURN and buttons[0].isSelect:
 						return True
-					elif event.key == pygame.K_RETURN and buttons[1].isSelect:
+					elif event.key == pygame.K_RETURN and buttons[1].isSelect and not showWarMes:
 						if showResult:
 							showResult = False
 						else:
 							showResult = True
 					elif event.key == 99 and showResult:
-						self.clearHistory(result, name)
+						showWarMes = True
+					elif event.key == 121 and showWarMes:
+						self.clearHistory(result)
+						showWarMes = False
+					elif event.key == 110 and showWarMes:
+						showWarMes = False
 					elif event.key == pygame.K_ESCAPE:
 						if showResult:
 							showResult = False
@@ -151,6 +159,8 @@ class Menu(object):
 					circle[i].nextColor = choice(circle[i].availColor)
 
 			if showResult:
+				if showWarMes:
+					self.showWarMes()
 				self.showResult(result, name) 
 			else:
 				for i in range(3):

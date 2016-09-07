@@ -2,12 +2,11 @@ import pygame, random
 from snakeMenu import Circle
 
 class Block(Circle):
-	def __init__(self, x, y):
+	def __init__(self, x, y, color, nextColor):
 		self.x = x
 		self.y = y
-		self.color = random.choice([[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]])
-		self.availColor = [col for col in [[227, 16, 164], [214,237, 9], [240,201,86], [255,0,0], [0,255,0], [0,0,255]] if col != self.color]
-		self.nextColor = random.choice(self.availColor)
+		self.color = color
+		self.nextColor = nextColor
 
 	def draw(self, screen, size):
 		pygame.draw.rect(screen, self.color, [self.x, self.y, size, size])
@@ -16,10 +15,12 @@ class Block(Circle):
 class Snake(object):
 	def __init__(self):
 		self.snake = []
-		self.snake.append(Block(50,350))
+		self.color = random.choice([[204,132,245], [153,247,213], [240,201,86]])
+		self.nextColor = random.choice([col for col in [[204,132,245], [153,247,213], [240,201,86]] if col != self.color])
+		self.snake.append(Block(50,350, self.color, self.nextColor))
 		self.speed = 3
 		self.size = 20
-		self.fallBlocks = []
+		self.numOfChanged = 0
 
 	def move(self, speedX, speedY):
 		if speedX != 0:	
@@ -33,8 +34,7 @@ class Snake(object):
 		x = self.snake[0].x + addX
 		y = self.snake[0].y + addY
 
-		self.snake.insert(0, Block(x, y))
-		self.snake[0].color = self.snake[-1].color 
+		self.snake.insert(0, Block(x, y, self.snake[-1].color, self.snake[-1].nextColor))
 		self.snake.remove(self.snake[-1])
 
 	def gameover(self, width, high):
@@ -50,10 +50,15 @@ class Snake(object):
 		self.size -= inc*5
 
 	def draw(self, screen):
+		if self.numOfChanged == len(self.snake):
+			self.numOfChanged = 0
+			self.nextColor = random.choice([[204,132,245], [153,247,213], [240,201,86]])
+			for i in range(len(self.snake)):
+				self.snake[i].nextColor = self.nextColor
 		for i in range(len(self.snake)):
 			self.snake[i].draw(screen, self.size)
 			if self.snake[i].changeColor():
-				self.snake[i].nextColor = self.snake[i-1].color 
+				self.numOfChanged += 1
 
 
 class FallBlock(Snake):
@@ -78,6 +83,8 @@ class Food(object):
 		self.typ = 0
 		self.color = (0,0,0)
 		self.addPoint = 0
+		self.picture = pygame.image.load("bottle.png").convert()
+		self.picture.set_colorkey((255,255,255))
 
 	def checkCoor(self, list1, list2, size1, size2):
 		self.x = random.choice([random.randint(0,180), random.randint(350,480), random.randint(650,780)])
@@ -134,5 +141,5 @@ class Food(object):
 					self.toDown = True
 
 	def draw(self,screen):
-		pygame.draw.rect(screen, self.color, [self.x, self.ys, 20,20])
+		screen.blit(self.picture, [self.x, self.ys])
 		self.fall()
